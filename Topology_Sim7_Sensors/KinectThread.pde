@@ -125,21 +125,8 @@ class KinectThread {//extends Thread {
 
   int metersToRawDepth(float rawDepth) {
     return (int)((((1.0 / rawDepth)-3.3309495161))/-0.0030711016);
-  }
-
-  //PGraphics copyGraphics(PGraphics src, PGraphics dest) {
-  //  if (dest == null || dest.width != src.width || dest.height != src.height) {
-  //    dest = createGraphics(src.width, src.height);
-  //  }    src.loadPixels();
-  //  dest.beginDraw();
-  //  dest.clear();
-  //  dest.loadPixels();
-  //  arrayCopy(src.pixels, 0, dest.pixels, 0, src.pixels.length);
-  //  dest.updatePixels();
-  //  dest.endDraw();
-  //  return dest;
-  //}
-
+  } 
+  
   public void createBuffer() {
     //tempBuffer = createGraphics(width, height);
     tempBuffer = createGraphics(calibratethread.getDisplayRect()[2], calibratethread.getDisplayRect()[3]);
