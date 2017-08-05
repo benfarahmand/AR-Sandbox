@@ -13,16 +13,14 @@ boolean DRAW_VECTORS = false;
 boolean startServices = false;
 
 float levels = 15; //can deccrease layers to improve performance                    
-float hfactor, wfactor;                
-//float elevation = 25;                 
+float hfactor, wfactor;                                 
 
 float colorStart =  0, colorRange =  1;             
 int shift;
 OOCSI oocsi;
-int lowestPoint = 885, highestPoint = 885-50;
-//int lowestPoint = 850, highestPoint = 750;
+//int lowestPoint = 885, highestPoint = 885-50;
+int lowestPoint = 850, highestPoint = 750;
 //int lowestPoint = 950, highestPoint = 850;
-QRReader qr;
 
 void setup() {
   OOCSIServer.main(new String[] {});
@@ -55,10 +53,10 @@ void draw() {
       kinectthread.run();
       //image(kinectthread.display(),0,0,width,height);
       blobthread.run();
-      vectorthread.run();
+      //vectorthread.run();
       //background(0);
       //if (DRAW_VECTORS) image(vectorthread.display(), 0, 0);
-      //image(blobthread.display(), 0, 0, width, height);
+      image(blobthread.display(), 0, 0, width, height);
       //image(kinectthread.getVideo(),0,0);
       //qr.run();
       oocsi.channel("datachannel").data("image pixels", (int[]) blobthread.getPixels()).send();
