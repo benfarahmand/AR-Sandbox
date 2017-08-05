@@ -1,16 +1,13 @@
-import org.openkinect.freenect.*;
-import org.openkinect.processing.*;
-
 class KinectThread {//extends Thread {
 
   boolean running = false;
   Kinect kinect;
   PGraphics buffer, tempBuffer;
   // Array of BlobDetection Instances
-  Topology_Sim7_Sensors parent;
+  Sensors parent;
   boolean bufferReady = false;
 
-  KinectThread(Topology_Sim7_Sensors p) {
+  KinectThread(Sensors p) {
     parent = p;
     //buffer = createGraphics(width, height);
     //tempBuffer = createGraphics(width, height);
@@ -87,33 +84,33 @@ class KinectThread {//extends Thread {
     tempBuffer.filter(BLUR, 8);
   }
 
-  void generateAlphaImage() {
-    tempBuffer.beginDraw();
-    tempBuffer.clear();
-    int[] depth = kinect.getRawDepth();// Get the raw depth as array of integers
-    int skip = 4; // number of skipped locations equals scale, increase scale to increase speed, but lowers resolution
-    tempBuffer.strokeWeight(skip);
-    for (int x = 0; x < kinect.width; x += skip) {
-      for (int y = 0; y < kinect.height; y += skip) {
-        int offset = x + y*kinect.width;
-        int rawDepth = depth[offset];
-        if (rawDepth>lowestPoint) {
-          tempBuffer.stroke(255, map(lowestPoint, lowestPoint, highestPoint, 0, 255));
-          //tempBuffer.fill(255, map(lowestPoint, lowestPoint, highestPoint, 0, 255));
-        } else if (rawDepth<highestPoint) {
-          tempBuffer.stroke(255, map(highestPoint, lowestPoint, highestPoint, 0, 255));
-          //tempBuffer.fill(255, map(lowestPoint, lowestPoint, highestPoint, 0, 255));
-        } else {
-          tempBuffer.stroke(255, map(rawDepth, lowestPoint, highestPoint, 0, 255));
-          //tempBuffer.fill(255, map(lowestPoint, lowestPoint, highestPoint, 0, 255));
-        }
-        tempBuffer.point(x, y);
-        //tempBuffer.rect(x, y,x+skip,y+skip);
-      }
-    }
-    tempBuffer.endDraw();
-    tempBuffer.filter(BLUR, 8);
-  }
+  //void generateAlphaImage() {
+  //  tempBuffer.beginDraw();
+  //  tempBuffer.clear();
+  //  int[] depth = kinect.getRawDepth();// Get the raw depth as array of integers
+  //  int skip = 4; // number of skipped locations equals scale, increase scale to increase speed, but lowers resolution
+  //  tempBuffer.strokeWeight(skip);
+  //  for (int x = 0; x < kinect.width; x += skip) {
+  //    for (int y = 0; y < kinect.height; y += skip) {
+  //      int offset = x + y*kinect.width;
+  //      int rawDepth = depth[offset];
+  //      if (rawDepth>lowestPoint) {
+  //        tempBuffer.stroke(255, map(lowestPoint, lowestPoint, highestPoint, 0, 255));
+  //        //tempBuffer.fill(255, map(lowestPoint, lowestPoint, highestPoint, 0, 255));
+  //      } else if (rawDepth<highestPoint) {
+  //        tempBuffer.stroke(255, map(highestPoint, lowestPoint, highestPoint, 0, 255));
+  //        //tempBuffer.fill(255, map(lowestPoint, lowestPoint, highestPoint, 0, 255));
+  //      } else {
+  //        tempBuffer.stroke(255, map(rawDepth, lowestPoint, highestPoint, 0, 255));
+  //        //tempBuffer.fill(255, map(lowestPoint, lowestPoint, highestPoint, 0, 255));
+  //      }
+  //      tempBuffer.point(x, y);
+  //      //tempBuffer.rect(x, y,x+skip,y+skip);
+  //    }
+  //  }
+  //  tempBuffer.endDraw();
+  //  tempBuffer.filter(BLUR, 8);
+  //}
 
   // These functions come from: http://graphics.stanford.edu/~mdfisher/Kinect.html
   float rawDepthToMeters(int depthValue) {
@@ -126,7 +123,7 @@ class KinectThread {//extends Thread {
   int metersToRawDepth(float rawDepth) {
     return (int)((((1.0 / rawDepth)-3.3309495161))/-0.0030711016);
   } 
-  
+
   public void createBuffer() {
     //tempBuffer = createGraphics(width, height);
     tempBuffer = createGraphics(calibratethread.getDisplayRect()[2], calibratethread.getDisplayRect()[3]);

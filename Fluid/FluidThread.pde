@@ -28,10 +28,10 @@ class FluidThread {//extends Topology_Sim3 {
   DwParticleEmitter emitter;
   DwPixelFlow pixelflow;
   DwLiquidFX liquidfx;
-  Topology_Sim7_Fluid parent;
+  Fluid parent;
   int particle_counter = 0;
 
-  FluidThread(Topology_Sim7_Fluid t) {
+  FluidThread(Fluid t) {
     //surface.setLocation(0, 0);
     parent = t;
     pixelflow = new DwPixelFlow(parent);

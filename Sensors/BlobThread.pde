@@ -1,3 +1,4 @@
+//creating blob thread with potential for multi-threading in case we can run it faster
 class BlobThread {//extends Thread {
 
   boolean running = false, bufferReady = false;
@@ -6,12 +7,12 @@ class BlobThread {//extends Thread {
   PGraphics buffer, tempBuffer;
   //int wfactor, hfactor;
 
-  BlobThread() {
-    theBlobDetection = new BlobDetection[int(levels)];
-    buffer = createGraphics(width, height);
-    tempBuffer = createGraphics(width, height);
-    img = new PImage();
-  }
+  //BlobThread() {
+  //  theBlobDetection = new BlobDetection[int(levels)];
+  //  buffer = createGraphics(width, height);
+  //  tempBuffer = createGraphics(width, height);
+  //  img = new PImage();
+  //}
   
   BlobThread(int w, int h) {
     theBlobDetection = new BlobDetection[int(levels)];
