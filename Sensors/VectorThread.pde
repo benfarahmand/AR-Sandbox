@@ -1,30 +1,15 @@
 class VectorThread {//extends Thread {
 
-  boolean running = false, gradientsReady = false, bufferReady = false;
+  boolean running = false;//, gradientsReady = false, bufferReady = false;
   PImage img; //this is the alpha image containing the depth information
-  //float[][][] gradients, tempGradients; //third dimension is velocity, 1st index = x, 2nd index = y
-  float[] gradients;//, tempGradients; //second dimension is velocity, 1st index = x, 2nd index = y
-  //int wfactor, hfactor;
-  //PGraphics buffer, 
+  float[] gradients;
+ 
   PGraphics tempBuffer;
-  int resolution=4;
+  int resolution=1;
   int myWidth, myHeight;
-
-  //VectorThread() {
-  //  //gradients = new float[width][height][2]; //for 2d array: it would be height*width+width, then to access it, it's y*width+x
-  //  //tempGradients = new float[width][height][2];
-  //  gradients = new float[2*(height*width+width)]; //for 2d array: it would be height*width+width, then to access it, it's y*width+x
-  //  tempGradients = new float[2*(height*width+width)];
-  //  buffer = createGraphics(width, height);
-  //  tempBuffer = createGraphics(width, height);
-  //}
-
+  
   VectorThread(int w, int h) {
-    //gradients = new float[width][height][2]; //for 2d array: it would be height*width+width, then to access it, it's y*width+x
-    //tempGradients = new float[width][height][2];
     gradients = new float[2*(h*w+w)]; //for 2d array: it would be height*width+width, then to access it, it's y*width+x
-    //tempGradients = new float[2*(h*w+w)];
-    //buffer = createGraphics(w, h);
     tempBuffer = createGraphics(w, h);
     myWidth = w;
     myHeight = h;

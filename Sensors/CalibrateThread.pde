@@ -36,6 +36,22 @@ class CalibrateThread {
     rectCoordinates[3] = rectH;
   }
   
+  void addToLeft(int l){
+    rectCoordinates[0] += l;
+  }
+  
+  void addToTop(int t){
+    rectCoordinates[1] += t;
+  }
+  
+  void addToRight(int r){
+    rectCoordinates[2] += r;
+  }
+  
+  void addToBottom(int b){
+    rectCoordinates[3] += b;
+  }
+  
   void undoRect(){
     setRectangle = false;
     initXY = false;
@@ -49,15 +65,15 @@ class CalibrateThread {
     // - then, it needs to scale that section of the
 
 
-    // first try and find the rectangle and then project the image back
+    // first try and find the rectangle and then project the image back through the projector
     if (!setRectangle) {
       //background(255); //set it to white, and then do threshhold to find the blob rectangle
       image(kinectthread.getVideo(), 0, 0,width,height);
-      stroke(0,200,0);
-      strokeWeight(4);
+      stroke(255);
+      strokeWeight(15);
       rect(0,0,width,height);
-      stroke(200, 0, 0);
-      strokeWeight(2);
+      stroke(0,255, 0);
+      strokeWeight(5);
       noFill();
       if (mousePressed) {
         if (!initXY) {

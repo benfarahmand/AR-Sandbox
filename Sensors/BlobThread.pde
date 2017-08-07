@@ -4,76 +4,57 @@ class BlobThread {//extends Thread {
   boolean running = false, bufferReady = false;
   BlobDetection[] theBlobDetection;// = new BlobDetection[int(levels)];
   PImage img;
-  PGraphics buffer, tempBuffer;
-  //int wfactor, hfactor;
+  //PGraphics buffer; 
+  PGraphics tempBuffer;
+  int myWidth, myHeight;
+  int myX, myY;
 
-  //BlobThread() {
-  //  theBlobDetection = new BlobDetection[int(levels)];
-  //  buffer = createGraphics(width, height);
-  //  tempBuffer = createGraphics(width, height);
-  //  img = new PImage();
-  //}
-  
   BlobThread(int w, int h) {
     theBlobDetection = new BlobDetection[int(levels)];
-    buffer = createGraphics(w, h);
+    //buffer = createGraphics(w, h);
     tempBuffer = createGraphics(w, h);
-    img = createImage(w,h,RGB);
+    img = createImage(w, h, RGB);
+    myX=0;
+    myY=0;
+    myWidth=width;
+    myHeight=height;
   }
 
-  //PGraphics display() {
-  //  if (bufferReady) return tempBuffer;
-  //  else return buffer;
-  //}
-  
   PGraphics display() {
     return tempBuffer;
   }
-  
+
   int[] getPixels() {
     tempBuffer.beginDraw();
     tempBuffer.loadPixels();
     tempBuffer.endDraw();
     return tempBuffer.pixels;
   }
-  
-  //int[] getPixels() {
-  //  if (bufferReady) {
-  //    tempBuffer.loadPixels();
-  //    return tempBuffer.pixels;
-  //  } else {
-  //    buffer.loadPixels();
-  //    return buffer.pixels;
-  //  }
-  //}
 
   void run() {
     //println("entered blob thread run");
     if (running) {
       try {
-          //blobsReady = false;
-          img = kinectthread.display();//new PImage(kinectthread.display().width, kinectthread.display().height);
-          //img.copy(kinectthread.display(), 0, 0, kinectthread.display().width, kinectthread.display().height, 0, 0, img.width, img.height);
-          //wfactor = width/img.width;
-          //hfactor = height/img.height;
-          for (int i=0; i<levels; i++) {
-            theBlobDetection[i] = new BlobDetection(img.width, img.height);
-            theBlobDetection[i].setThreshold(i/levels);
-            theBlobDetection[i].computeBlobs(img.pixels);
-          }
-          //blobsReady = true;
-          //bufferReady = false;
-          tempBuffer.beginDraw();
-          tempBuffer.clear();
-          tempBuffer.strokeWeight(1);
-          for (int i=0; i<levels; i++) { 
-            drawContours(i, tempBuffer);
-          }
-          tempBuffer.endDraw();
-          //bufferReady = true;
-          //buffer = copyGraphics(tempBuffer, buffer);
-          //Thread.sleep(5000);
-          //oocsi.channel("datachannel").data("image pixels", (int[]) getPixels()).send();
+        img = kinectthread.display();//new PImage(kinectthread.display().width, kinectthread.display().height);
+        //img.copy(kinectthread.display(), 0, 0, kinectthread.display().width, kinectthread.display().height, 0, 0, img.width, img.height);
+        for (int i=0; i<levels; i++) {
+          theBlobDetection[i] = new BlobDetection(img.width, img.height);
+          theBlobDetection[i].setThreshold(i/levels);
+          theBlobDetection[i].computeBlobs(img.pixels);
+        }
+        //blobsReady = true;
+        //bufferReady = false;
+        tempBuffer.beginDraw();
+        tempBuffer.clear();
+        tempBuffer.strokeWeight(1);
+        for (int i=0; i<levels; i++) {
+          drawContours(i, tempBuffer);
+        }
+        tempBuffer.endDraw();
+        //bufferReady = true;
+        //buffer = copyGraphics(tempBuffer, buffer);
+        //Thread.sleep(5000);
+        //oocsi.channel("datachannel").data("image pixels", (int[]) getPixels()).send();
       }
       //catch(InterruptedException ie) {
       //  println("Child thread interrupted! " + ie);
@@ -118,6 +99,22 @@ class BlobThread {//extends Thread {
         }
       }
     }
+  }
+
+  void addToLeft(int l) {
+    myX += l;
+  }
+
+  void addToTop(int t) {
+    myY += t;
+  }
+
+  void addToRight(int r) {
+    myWidth += r;
+  }
+
+  void addToBottom(int b) {
+    myHeight += b;
   }
 
   public void start() {

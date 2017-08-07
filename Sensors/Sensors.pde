@@ -6,29 +6,32 @@ import nl.tue.id.oocsi.server.*;
 import org.openkinect.processing.*;
 import jp.nyatla.nyar4psg.*;
 import org.openkinect.freenect.*;
+import controlP5.*;
 
+ControlP5 cp5;
 BlobThread blobthread;
 KinectThread kinectthread;
 VectorThread vectorthread;
 CalibrateThread calibratethread;
 
-boolean DRAW_VECTORS = true;
+boolean DRAW_VECTORS = false;
 boolean startServices = false;
+int left = 0, top = 0, right = 400, bottom = 400;
+int pleft = 0, ptop = 0, pright = 400, pbottom = 400;
 
-float levels = 15; //can deccrease layers to improve performance                    
-//float hfactor, wfactor;                                 
+float levels = 25; //can deccrease layers to improve performance                                                     
 
 float colorStart =  0, colorRange =  1;             
 int shift;
 OOCSI oocsi;
 //int lowestPoint = 885, highestPoint = 885-50;
-int lowestPoint = 850, highestPoint = 750;
+int lowestPoint = 825, highestPoint = 765;
 //int lowestPoint = 950, highestPoint = 850;
 
 void setup() {
-  OOCSIServer.main(new String[] {});
-  //size(1280, 768, P2D);
-  size(640, 480, P2D);  
+  //OOCSIServer.main(new String[] {});
+  size(1280, 800, P2D);
+  //size(640, 480, P2D);  
 
   kinectthread = new KinectThread(this);
   kinectthread.start();
@@ -37,6 +40,8 @@ void setup() {
 
 void draw() {
   // Kinect and Projector are usually misaligned, need to manually calibrate them so they cover the same area
+  //TO DO: Calibration should also include some sort of multi-stage calibration, where you begin by setting the bounding box
+  // THEN: once the bounding box is set, it draws the blobs on top of the kinect image, and the user needs to align the two 
   if (!calibratethread.calibrated) calibratethread.calibration(); 
   // once calibration is done, must start the various services that will do blob tracking and also calculate the vector gradients
   else if (!startServices && calibratethread.calibrated) {
@@ -45,29 +50,76 @@ void draw() {
     vectorthread = new VectorThread(calibratethread.getDisplayRect()[2], calibratethread.getDisplayRect()[3]);
     blobthread.start();
     vectorthread.start();
-    oocsi = new OOCSI(this, "senderName_" + System.currentTimeMillis(), "localhost");
+    //oocsi = new OOCSI(this, "senderName_" + System.currentTimeMillis(), "localhost");
     //update the shift based on calibration
     shift = calibratethread.getDisplayRect()[3]*calibratethread.getDisplayRect()[2]+calibratethread.getDisplayRect()[2]; //might have to transmit the new height and width... or could get it from the image that's sent
-    frameRate(1);
+    //frameRate(1);
+    cp5 = new ControlP5(this);
+    cp5.addSlider("left")
+      .setPosition(10, 10)
+      .setSize(200, 20)
+      .setRange(0, 400)
+      .setValue(0)
+      ;
+    cp5.addSlider("top")
+      .setPosition(10, 40)
+      .setSize(200, 20)
+      .setRange(0, 400)
+      .setValue(0)
+      ;
+    cp5.addSlider("right")
+      .setPosition(10, 70)
+      .setSize(200, 20)
+      .setRange(0, 400)
+      .setValue(400)
+      ;
+    cp5.addSlider("bottom")
+      .setPosition(10, 100)
+      .setSize(200, 20)
+      .setRange(0, 400)
+      .setValue(400)
+      ;
     startServices = true;
   } else {
     try {
       background(0);
-
+      //frameRate(1);
       kinectthread.run();
       //image(kinectthread.display(),0,0,width,height);
       blobthread.run();
-      vectorthread.run();
+      //vectorthread.run();
       //background(0);
-      //image(kinectthread.getVideo(),0,0);
-      //image(blobthread.display(), 0, 0, width, height);
+      //image(kinectthread.getVideo(), 0, 0, width, height, 
+      //calibratethread.getDisplayRect()[0], calibratethread.getDisplayRect()[1], 
+      //calibratethread.getDisplayRect()[2], calibratethread.getDisplayRect()[3] 
+      //  );
+      // is it possible to take the rectangle and then display it within the screen?
+      // need to explore the idea of the blobs not stretching...
+      image(blobthread.display(), blobthread.myX, blobthread.myY, blobthread.myWidth, blobthread.myHeight); 
+      //image(blobthread.display(), calibratethread.getDisplayRect()[0], calibratethread.getDisplayRect()[1]);
+      //, calibratethread.getDisplayRect()[2], calibratethread.getDisplayRect()[3]);
       //if (DRAW_VECTORS) image(vectorthread.display(), 0, 0, width, height);
-      
 
-      oocsi.channel("datachannel").data("image pixels", (int[]) blobthread.getPixels()).send();
-      oocsi.channel("datachannel").data("array", (float[]) vectorthread.getGradients()).send();
-      oocsi.channel("datachannel").data("image dimensions", (int[]) calibratethread.getDisplayRect()).send();
+      //oocsi.channel("datachannel").data("image pixels", (int[]) blobthread.getPixels()).send();
+      //oocsi.channel("datachannel").data("array", (float[]) vectorthread.getGradients()).send();
+      //oocsi.channel("datachannel").data("image dimensions", (int[]) calibratethread.getDisplayRect()).send();
       text(lowestPoint +" , "+frameRate, width-100, height-10);
+      if (left!=pleft) {
+        blobthread.addToLeft(left-pleft);
+        pleft=left;
+      }
+      if (top!=ptop) {
+        blobthread.addToTop(top-ptop);
+        ptop=top;
+      }
+      if (right!=pright) {
+        blobthread.addToRight(right-pright);
+        pright=right;
+      }
+      if (bottom!=pbottom) {
+        blobthread.addToBottom(bottom-pbottom);
+        pbottom=bottom;
+      }
       //wait(5000);
     }
     catch(Exception e) {

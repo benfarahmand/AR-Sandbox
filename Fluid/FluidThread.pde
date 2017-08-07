@@ -23,7 +23,7 @@ class FluidThread {//extends Topology_Sim3 {
   PGraphics2D pg_particles;
   public boolean UPDATE_PHYSICS = true;
   public boolean USE_DEBUG_DRAW = false;
-  public boolean APPLY_LIQUID_FX = false;
+  public boolean APPLY_LIQUID_FX = true;
   public boolean createParticles = false;
   DwParticleEmitter emitter;
   DwPixelFlow pixelflow;
@@ -41,17 +41,17 @@ class FluidThread {//extends Topology_Sim3 {
   }
 
   void run() {
-    try {
-      if (UPDATE_PHYSICS) {
-        if (createParticles) addParticles();
-        world.update();
-        influenceFluidParticleVelocity(world);
-      }
-      drawFluid();
+    //try {
+    if (UPDATE_PHYSICS) {
+      if (createParticles) addParticles();
+      world.update();
+      influenceFluidParticleVelocity(world);
     }
-    catch(Exception e) {
-      println(e.toString());
-    }
+    drawFluid();
+    //}
+    //catch(Exception e) {
+    //  println(e.toString());
+    //}
   }
 
   void drawFluid() {
@@ -99,14 +99,19 @@ class FluidThread {//extends Topology_Sim3 {
       for (int i = 0; i < world.getParticleCount()/*v.length*/; i++) {
         Vec2 p2 = new Vec2();
         world.transform.getBox2screen(p[i].x, p[i].y, p2);
-        int x = round(map(p2.x,0,width,0,imagedim[2]));
-        int y = round(map(p2.y,0,height,0,imagedim[3]));
-        if (!gradientBufferReady) {
-          v[i].x=v[i].x+gradients[y*imagedim[2]+x];//*.1;
-          v[i].y=v[i].y+gradients[y*imagedim[2]+x+shift];//*.1;
-        } else {
-          v[i].x=v[i].x+tempGradients[y*imagedim[2]+x];//*.1;
-          v[i].y=v[i].y+tempGradients[y*imagedim[2]+x+shift];//*.1;
+        int x = round(map(p2.x, 0, width, 0, imagedim[2]));
+        int y = round(map(p2.y, 0, height, 0, imagedim[3]));
+        try {
+          if (!gradientBufferReady) {
+            v[i].x=v[i].x+gradients[y*imagedim[2]+x];//*.1;
+            v[i].y=v[i].y+gradients[y*imagedim[2]+x+shift];//*.1;
+          } else {
+            v[i].x=v[i].x+tempGradients[y*imagedim[2]+x];//*.1;
+            v[i].y=v[i].y+tempGradients[y*imagedim[2]+x+shift];//*.1;
+          }
+        }
+        catch(IndexOutOfBoundsException e){
+          e.printStackTrace();
         }
       }
       //world.setParticleVelocityBuffer(v, world.getParticleCount());
@@ -117,8 +122,8 @@ class FluidThread {//extends Topology_Sim3 {
     if (world != null) world.release(); 
     world = null;
   }
-  
-  public int getParticleCount(){
+
+  public int getParticleCount() {
     return world.getParticleCount();
   }
 
@@ -176,7 +181,7 @@ class FluidThread {//extends Topology_Sim3 {
 
     //if (particle_counter % 1 == 0)
     //{
-      emitter.emitParticles(2);
+    emitter.emitParticles(2);
     //}
     particle_counter++;
   }
